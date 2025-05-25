@@ -71,7 +71,7 @@ velocity = 0
 displacement = 0
 
 counter = 0 # Used to detect if the system is still oscillating or reached stability.
-latest_20 = [[],[]]
+latest_40 = [[],[]]
 oscillating = True
 while stable == False: # PID controller initialises here
     time.sleep(0.03) # Simulate real world hardware latency
@@ -90,7 +90,8 @@ while stable == False: # PID controller initialises here
     i_vel, u_vel, uvI_reset = uv(dt, e_vel, prev_e_vel, i_vel, uvI_reset)
 
     angular_acceleration = u_theta / mass
-    angular_velocity += angular_acceleration * dt # += is used instead of = because you want the current velocity, which is a result of all previous velocities added todether.
+    angular_velocity += angular_acceleration * dt
+    # += is used instead of = because you want the current velocity, which is a result of all previous velocities added todether.
     d_angle = angular_velocity * dt # total change in angle from start would use += instead of =
     current_angle += d_angle
     current_angle *= 0.99 # Damping factor, prevents infinite oscillation
@@ -107,15 +108,15 @@ while stable == False: # PID controller initialises here
 
     print(f"Velocity: {current_velocity}, angle: {current_angle}")
 
-    latest_20[0].append(current_angle)
-    latest_20[1].append(current_velocity)
+    latest_40[0].append(current_angle)
+    latest_40[1].append(current_velocity)
     counter += 1
     if counter > 19:
-        if abs(max(latest_20[0]) - min(latest_20[0])) <= 1 and abs(max(latest_20[1]) - min(latest_20[1])) <= 1:
+        if abs(max(latest_40[0]) - min(latest_40[0])) <= 1 and abs(max(latest_40[1]) - min(latest_40[1])) <= 1:
             oscillating = False
         else:
             oscillating = True
-        latest_20 = [[],[]]
+        latest_40 = [[],[]]
         counter = 0
 
     if abs(e_theta) <= 1 and abs(e_vel) <= 5 and oscillating == False:
